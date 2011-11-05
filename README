@@ -1,0 +1,64 @@
+Very Simple to Use facebook library to get a list of a users friends 
+and post to either their wall or a friends wall.
+
+Setup the project just as facebook has described at 
+https://developers.facebook.com/docs/mobile/ios/build/. 
+Except do not use their sdk source code. The source here has a copy that
+prevents facebook from opening mobile safari. Get the app id and add 
+it to the plist file as described at the site above.
+
+in the FacebookEx.h file add the application id at
+
+#define FBAppID @"<YOU_APP_ID>"
+
+While the h file is open take note of the properties here. Each one is used
+in your application to setup the parameters passed to the Facebook post dialog
+
+In your application delegate add:
+
+#import "FacebookEx.h"
+
+...
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    bool facebook = [defaults boolForKey:@"facebook_preference"];
+    
+    if (!facebook) {
+        [[FacebookEx sharedInstance] logOutWithAlert:NO];
+    }
+}
+
+This works with the Settings.Bundle file and allows the user to specify
+whether or not to stay logged in from the iOS settings screen. It also is
+used by the FacebookEx library to identify when to save the users settings
+
+As an example this IBAction method is hooked to a button in interface builder.
+It will launch the Facebook list into action.
+
+- (IBAction)facebookAction:(id)sender{
+    
+    [[FacebookEx sharedInstance] setMessage:@"message"];
+    
+    [[FacebookEx sharedInstance] setName:@"Name"];
+    [[FacebookEx sharedInstance] setItunesURL:@"itunes"];
+    [[FacebookEx sharedInstance] setAndroidURL:@"android"];
+    [[FacebookEx sharedInstance] setPicture:@"https://www.google.com/intl/en_com/images/srpr/logo3w.png"];
+    
+    [[FacebookEx sharedInstance] setProperties: [NSString stringWithFormat:
+                                                 @"{\"Property One\":{\"Property Description\", \"href\":\"http://www.google.com\"},\"Property One\":{\"Property Description\", \"href\":\"http://www.google.com\"}}", 
+                                                 [[FacebookEx sharedInstance] itunesURL], [[FacebookEx sharedInstance] androidURL] ]];
+    
+    [[FacebookEx sharedInstance] setDescription:@"Description"];
+    [[FacebookEx sharedInstance] setCaption:@"Caption"];
+    [[FacebookEx sharedInstance] setLink:@"http://link"];
+    [[FacebookEx sharedInstance] setRedirectURI: [[FacebookEx sharedInstance] itunesURL]];
+    
+    [[FacebookEx sharedInstance] displayFriendsListWithViewController:self];
+}
+
+Most of the above code sets properties that are used by the FacebookEX library as parameters for the dialog
+boxes. Play with the settings to achieve the desired results. Note that the last line is what initiates and
+opens Facebook.
+
+Thats it. That is all you need to be running with Facebook.
